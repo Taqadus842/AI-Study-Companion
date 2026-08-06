@@ -1,4 +1,4 @@
-v# AI Study Companion
+# AI Study Companion
 
 A Retrieval-Augmented Generation (RAG) application built using:
 
