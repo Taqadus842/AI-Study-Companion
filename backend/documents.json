@@ -1,0 +1,26 @@
+[
+    {
+        "id": "af5c1c6c-0774-4dc6-b170-d6483696439f",
+        "filename": "Machine Learning.txt",
+        "chunks": 7,
+        "status": "ready",
+        "uploadedAt": "2026-08-05T10:00:34.746566",
+        "sizeLabel": "2.60 KB"
+    },
+    {
+        "id": "0153a91e-c286-45ff-a96b-7d0616e3fcdf",
+        "filename": "LangChain_Study_Notes_Sample.pdf",
+        "chunks": 2,
+        "status": "ready",
+        "uploadedAt": "2026-08-05T10:00:46.924443",
+        "sizeLabel": "2.35 KB"
+    },
+    {
+        "id": "0241f7e7-2e4a-4e73-8339-3481fac2ed55",
+        "filename": "Artificial Intelligence.txt",
+        "chunks": 14,
+        "status": "ready",
+        "uploadedAt": "2026-08-05T10:01:00.293324",
+        "sizeLabel": "6.02 KB"
+    }
+]
