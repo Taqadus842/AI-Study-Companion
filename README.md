@@ -1,204 +1,371 @@
-# AI Study Companion - Embedding & Semantic Retrieval Microservice
+# 📚 AI Study Companion
 
-An enterprise-grade, modular Python microservice built with **FastAPI**, **Sentence Transformers**, and **Qdrant Vector Database** for document chunk embedding, vector storage, and Top-K semantic retrieval.
+An AI-powered study assistant that transforms your lecture notes into personalized study plans using Retrieval-Augmented Generation (RAG), semantic search, and Large Language Models (LLMs).
 
 ---
 
-## 🚀 System Architecture & Pipeline
+## 🚀 Overview
+
+AI Study Companion helps students study smarter by allowing them to upload lecture notes in PDF or TXT format. The system extracts and processes the content, stores semantic embeddings in a vector database, retrieves the most relevant information for a given topic, and uses an LLM (Google Gemini) to generate a personalized day-wise study plan.
+
+---
+
+## ✨ Features
+
+### 📄 Upload Study Notes
+- Upload PDF and TXT files
+- Automatic document validation
+- Secure file handling
+
+### 📖 Document Processing
+- Extract text from uploaded documents
+- Split documents into semantic chunks
+- Preserve context using chunk overlap
+
+### 🧠 Embedding Generation
+- Generate embeddings using Sentence Transformers
+- Store vectors in Qdrant
+- Attach metadata to every chunk
+
+### 🔍 Semantic Retrieval
+- Retrieve the most relevant notes based on a study topic
+- Cosine similarity search using Qdrant
+- Top-K contextual retrieval
+
+### 🤖 AI Study Plan Generation
+Generate personalized study plans using Google Gemini.
+
+The study plan includes:
+
+- Day-wise schedule
+- Topics to study
+- Learning objectives
+- Revision suggestions
+- Summary
+
+### 💻 Modern Web Interface
+- Upload notes
+- Enter study topic
+- Generate study plan
+- Loading and error states
+- Responsive design
+
+---
+
+# 🏗️ System Workflow
+
+```text
+            Upload PDF/TXT
+                  │
+                  ▼
+          Extract Document Text
+                  │
+                  ▼
+           Split into Chunks
+                  │
+                  ▼
+      Generate Embedding Vectors
+                  │
+                  ▼
+      Store in Qdrant Database
+                  │
+                  ▼
+        User Enters Study Topic
+                  │
+                  ▼
+      Retrieve Relevant Chunks
+                  │
+                  ▼
+     Build Prompt for Gemini LLM
+                  │
+                  ▼
+      Generate Structured Study Plan
+                  │
+                  ▼
+        Display on Frontend
+```
+
+---
+
+# 🏛️ Architecture
 
 ```
- Document Chunks (Hooriya)
-          │
-          ▼
-   POST /embed API
-          │
-          ▼
- SentenceTransformers (all-MiniLM-L6-v2) ──► Generates 384-dim Vectors
-          │
-          ▼
- Qdrant Vector Store ──► Collection: `study_notes` (Cosine Similarity)
-          ▲
-          │ Top-K Semantic Search
-          │
-   POST /retrieve API ◄── User Query ("Machine Learning")
-          │
-          ▼
- Handover to Taqadus (LLM Study Plan Generator)
+Frontend (Next.js)
+        │
+        ▼
+ FastAPI Backend
+        │
+ ┌──────────────┐
+ │ Upload API   │
+ └──────────────┘
+        │
+        ▼
+Document Processing
+(PDF/TXT Loader)
+        │
+        ▼
+ Chunking Service
+        │
+        ▼
+Embedding Service
+(all-MiniLM-L6-v2)
+        │
+        ▼
+Qdrant Vector Database
+        │
+        ▼
+ Retrieval Service
+        │
+        ▼
+ Gemini LLM
+        │
+        ▼
+ Study Plan JSON
 ```
 
 ---
 
-## 🛠️ Tech Stack & Model Specs
+# 🛠 Tech Stack
 
-| Component | Specification / Technology |
-|---|---|
-| **Framework** | FastAPI + Uvicorn |
-| **Embedding Model** | `sentence-transformers/all-MiniLM-L6-v2` |
-| **Vector Dimension** | 384 |
-| **Vector Database** | Qdrant |
-| **Collection Name** | `study_notes` |
-| **Distance Metric** | Cosine Similarity (`Distance.COSINE`) |
-| **Testing** | Pytest + FastAPI TestClient |
+## Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+## Backend
+- FastAPI
+- Python
+
+## AI & NLP
+- Google Gemini
+- LangChain
+- Sentence Transformers
+- all-MiniLM-L6-v2
+
+## Vector Database
+- Qdrant
+
+## File Processing
+- PyPDF2 / PyMuPDF
+- Text Loader
+
+## Other Tools
+- Docker
+- Git
+- GitHub
+- Postman
 
 ---
 
-## ⚙️ Installation & Quickstart
+# ⚙️ Installation
 
-### 1. Environment Setup
-Clone the repository and install dependencies:
+## Clone Repository
+
 ```bash
-git clone <repository_url>
-cd AI-Study-Companion
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
+git clone https://github.com/Taqadus842/AI-Study-Companion.git
 
+cd AI-Study-Companion
+```
+
+---
+
+## Backend
+
+```bash
+cd backend
+
+python -m venv venv
+```
+
+Activate
+
+Linux/macOS
+
+```bash
+source venv/bin/activate
+```
+
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env`:
+---
+
+## Frontend
+
 ```bash
-cp .env.example .env
+cd frontend
+
+npm install
 ```
-Default configuration (`.env`):
+
+---
+
+# Environment Variables
+
+Create a `.env` file.
+
 ```env
-EMBEDDING_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+GOOGLE_API_KEY=YOUR_API_KEY
+
 QDRANT_URL=http://localhost:6333
-QDRANT_COLLECTION_NAME=study_notes
-QDRANT_VECTOR_SIZE=384
-```
 
-### 3. Run Qdrant Vector Database (Docker)
-Start a local Qdrant container:
-```bash
-docker run -d -p 6333:6333 -p 6334:6334 qdrant/qdrant
-```
-*Note: If Docker is not running, the service automatically falls back to an in-memory Qdrant client for local development and testing.*
+QDRANT_API_KEY=
 
-### 4. Launch FastAPI Server
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+COLLECTION_NAME=study_notes
 ```
-Interactive API docs are available at: `http://localhost:8000/docs`
 
 ---
 
-## 📡 API Reference
+# ▶️ Run the Application
 
-### 1. Store & Embed Document Chunks
-- **Endpoint**: `POST /embed`
-- **Content-Type**: `application/json`
-- **Request Body**:
+## Backend
+
+```bash
+uvicorn main:app --reload
+```
+
+Backend
+
+```
+http://localhost:8000
+```
+
+---
+
+## Frontend
+
+```bash
+npm run dev
+```
+
+Frontend
+
+```
+http://localhost:3000
+```
+
+---
+
+# 📡 API Endpoints
+
+## Upload Notes
+
+```
+POST /upload
+```
+
+Uploads PDF/TXT notes and returns processed chunks.
+
+---
+
+## Generate Embeddings
+
+```
+POST /embed
+```
+
+Creates embeddings and stores them in Qdrant.
+
+---
+
+## Retrieve Notes
+
+```
+POST /retrieve
+```
+
+Returns the most relevant chunks for a study topic.
+
+---
+
+## Generate Study Plan
+
+```
+POST /study-plan
+```
+
+Uses retrieved chunks and Gemini to generate a structured study plan.
+
+---
+
+# 📋 Example Study Plan
+
 ```json
 {
-  "chunks": [
+  "topic": "Machine Learning",
+  "study_plan": [
     {
-      "chunk_id": 1,
-      "text": "Artificial Intelligence is a branch of computer science focused on building smart machines.",
-      "metadata": { "subject": "AI Concepts" }
+      "day": 1,
+      "topic": "Introduction to Machine Learning"
     },
     {
-      "chunk_id": 2,
-      "text": "Machine Learning is a subset of AI that enables systems to learn from data.",
-      "metadata": { "subject": "ML Basics" }
-    }
-  ]
-}
-```
-- **Response**: `201 Created`
-```json
-{
-  "status": "success",
-  "stored_count": 2,
-  "message": "Successfully generated embeddings and stored 2 chunks in Qdrant collection 'study_notes'.",
-  "stored_ids": [1, 2]
-}
-```
-
----
-
-### 2. Retrieve Relevant Chunks (Semantic Search)
-- **Endpoint**: `POST /retrieve`
-- **Content-Type**: `application/json`
-- **Request Body**:
-```json
-{
-  "query": "Machine Learning",
-  "top_k": 2
-}
-```
-- **Response**: `200 OK`
-```json
-{
-  "results": [
-    {
-      "score": 0.9412,
-      "chunk": "Machine Learning is a subset of AI that enables systems to learn from data.",
-      "chunk_id": 2,
-      "metadata": { "subject": "ML Basics" }
+      "day": 2,
+      "topic": "Supervised Learning"
     },
     {
-      "score": 0.8954,
-      "chunk": "Artificial Intelligence is a branch of computer science focused on building smart machines.",
-      "chunk_id": 1,
-      "metadata": { "subject": "AI Concepts" }
+      "day": 3,
+      "topic": "Unsupervised Learning"
     }
-  ]
+  ],
+  "summary": "Complete the topics sequentially and revise on the final day."
 }
 ```
 
 ---
 
-## 🤝 Handover Documentation for Taqadus
+# 🧪 Testing
 
-This section contains all details required by **Taqadus** to feed retrieved document context into the downstream LLM Study Plan Generator.
-
-### Integration Details for Taqadus:
-- **Retrieval API Endpoint**: `POST /retrieve` (Base URL: `http://localhost:8000`)
-- **Qdrant Collection Name**: `study_notes`
-- **Request Schema**:
-  ```json
-  {
-    "query": "<User Topic / Learning Goal>",
-    "top_k": 5
-  }
-  ```
-- **Response Schema**:
-  ```json
-  {
-    "results": [
-      {
-        "score": <float: Cosine similarity score (e.g. 0.94)>,
-        "chunk": "<str: Text content of retrieved document chunk>",
-        "chunk_id": <int/str: Unique ID of the chunk>,
-        "metadata": { ... }
-      }
-    ]
-  }
-  ```
-- **Usage in LLM Prompt**:
-  Extract the `"chunk"` text strings from `results` array and inject them into the system/user prompt for study plan generation.
+- ✅ PDF upload
+- ✅ TXT upload
+- ✅ Text extraction
+- ✅ Document chunking
+- ✅ Embedding generation
+- ✅ Qdrant storage
+- ✅ Semantic retrieval
+- ✅ Gemini integration
+- ✅ Study plan generation
+- ✅ Frontend API integration
 
 ---
 
-## 🧪 Testing
+# 🚀 Future Improvements
 
-Execute the automated test suite with pytest:
-```bash
-pytest tests/ -v
-```
+- Flashcard generation
+- AI-generated quizzes
+- Voice assistant
+- OCR for handwritten notes
+- Multi-document support
+- Authentication
+- Progress tracking dashboard
+- Calendar integration
+- Export study plans as PDF
 
 ---
 
-## 📋 Git Commit History & PR Structure
+# 👥 Team
 
-Recommended commit sequence implemented:
-1. `Add embedding model` (`services/embedding_service.py`)
-2. `Configure Qdrant client` (`services/qdrant_service.py`, `config.py`)
-3. `Create Qdrant collection` (`study_notes` with size 384 and COSINE metric)
-4. `Store embeddings in vector database` (`POST /embed`)
-5. `Implement semantic retrieval API` (`POST /retrieve`)
-6. `Refactor embedding and retrieval services` (`main.py`, unit tests & documentation)
+| Name | Responsibility |
+|------|----------------|
+| **Ume Taqadus** | Team Lead, LLM Integration, Study Plan Generation, Frontend Development |
+| **Hooriya** | FastAPI Backend, Document Processing, Chunking |
+| **Sabeen** | Embeddings, Qdrant Integration, Semantic Retrieval |
+
+---
+
+# 📄 License
+
+This project is developed for educational purposes as part of the FAST NUCES BS Computer Science coursework.
+
+---
+
+## ⭐ If you like this project, don't forget to star the repository!
